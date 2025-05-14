@@ -15,9 +15,10 @@ let episodesReversed = false;
 document.addEventListener('DOMContentLoaded', function () {
     // 初始化默认设置（如果是第一次加载）
     if (!localStorage.getItem('hasInitializedDefaults')) {
-        // 选择所有API（包括非成人和成人API）
+        // 只选择非成人API
         const allApiKeys = Object.keys(API_SITES);
-        selectedAPIs = allApiKeys;
+        // 过滤出非成人API
+        selectedAPIs = allApiKeys.filter(apiKey => !API_SITES[apiKey].adult);
         localStorage.setItem('selectedAPIs', JSON.stringify(selectedAPIs));
 
         // 默认关闭黄色内容过滤开关
