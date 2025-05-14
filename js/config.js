@@ -84,7 +84,7 @@ const API_SITES = {
         name: '小猫咪资源'
     },
     ffzy: {
-        api: 'http://ffzy5.tv',
+        api: 'http://api.ffzyapi.com',
         name: '非凡影视',
         detail: 'http://ffzy5.tv'
     },
@@ -131,10 +131,6 @@ const API_SITES = {
         api: 'https://api.zuidapi.com',
         name: '最大资源'
     },
-    yinghua: {
-        api: 'https://m3u8.apiyhzy.com',
-        name: '樱花资源'
-    },
     baidu: {
         api: 'https://api.apibdzy.com',
         name: '百度云资源'
@@ -151,25 +147,21 @@ const API_SITES = {
         api: 'https://ikunzyapi.com',
         name: 'iKun资源'
     },
-    applecms: {
-        api: 'https://www.applecms.cc',
-        name: '苹果CMS'
-    },
     lziapi: {
         api: 'https://cj.lziapi.com',
         name: '量子资源站'
-    },
-    xinlangapi: {
-        api: 'https://api.xinlangapi.com',
-        name: '新浪资源'
     },
     guangsu: {
         api: 'https://api.guangsuapi.com',
         name: '光速资源'
     },
-    hongniuzy2: {
-        api: 'https://www.hongniuzy2.com',
-        name: '红牛资源'
+    yzzyk: {
+        api: 'https://api.yzzy-api.com/inc/api_mac10_all.php',
+        name: '优质资源库'
+    },
+    hhzyapi: {
+        api: 'https://hhzyapi.com',
+        name: '豪华资源'
     },
     testSource: {
         api: 'https://www.example.com',
