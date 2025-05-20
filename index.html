@@ -436,40 +436,5 @@
 
     <!-- 添加弹窗和URL搜索参数处理脚本 -->
     <script src="js/index-page.js"></script>
-
-    <!-- 全选或全不选API函数 -->
-    <script>
-        /**
-         * 全选或全不选API
-         * @param {boolean} selectAll - true为全选, false为全不选
-         * @param {string|boolean} type - 'normal' 表示普通资源, 'adult' 表示成人资源, true (旧逻辑) 表示普通资源, undefined 表示所有
-         */
-        function selectAllAPIs(selectAll, type = undefined) {
-            const checkboxes = document.querySelectorAll('#apiCheckboxes input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                const apiData = availableApis.find(api => api.name === checkbox.name);
-                if (apiData) {
-                    if (type === 'normal') {
-                        if (!apiData.isAdult) {
-                            checkbox.checked = selectAll;
-                        }
-                    } else if (type === 'adult') {
-                        if (apiData.isAdult) {
-                            checkbox.checked = selectAll;
-                        }
-                    } else if (type === true) { // 兼容旧的 selectAllAPIs(true, true) 调用，视为普通资源
-                        if (!apiData.isAdult) {
-                            checkbox.checked = selectAll;
-                        }
-                    }
-                     else { // type 为 undefined 或其他情况，则全选/全不选所有
-                        checkbox.checked = selectAll;
-                    }
-                }
-            });
-            updateSelectedApiCount();
-            saveSelectedAPIs(); // 保存选择状态
-        }
-    </script>
 </body>
 </html>
