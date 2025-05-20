@@ -440,52 +440,78 @@ function updateSelectedApiCount() {
  * @param {string|boolean} type - 'normal' 表示普通资源, 'adult' 表示成人资源, true (旧逻辑) 表示普通资源, undefined 表示所有
  */
 function selectAllAPIs(selectAll, type = undefined) {
-    const checkboxes = document.querySelectorAll('#apiCheckboxes input[type="checkbox"]');
+    const checkboxes = document.querySelectorAll('#apiCheckboxes input[type="checkbox"], #customApisList input[type="checkbox"]');
 
-    // 构建一个包含所有可用API完整信息的列表，包括内置和自定义API
-    // 并确保每个API对象都有一个明确的 isAdult 标志
-    const allAvailableApis = [];
+    // 构建一个包含所有可用API完整信息的映射，键为API的唯一标识符
+    const allAvailableApisMap = new Map();
     Object.keys(API_SITES).forEach(key => {
-        allAvailableApis.push({
-            name: key,
+        allAvailableApisMap.set(key, { // 使用 API key 作为 map key
+            key: key,
+            name: API_SITES[key].name,
             isAdult: API_SITES[key].adult || false,
-            sourceName: API_SITES[key].name // 保留原始名称用于显示或匹配
+            isCustom: false
         });
     });
-    customAPIs.forEach(customApi => {
-        allAvailableApis.push({
-            name: customApi.name, // 自定义API的唯一标识通常是其name
+    customAPIs.forEach((customApi, index) => {
+        const customKey = 'custom_' + index; // 自定义API的唯一标识
+        allAvailableApisMap.set(customKey, {
+            key: customKey,
+            name: customApi.name,
             isAdult: customApi.isAdult || false,
-            sourceName: customApi.name
+            isCustom: true
         });
     });
 
     checkboxes.forEach(checkbox => {
-        // data-api 属性存储的是API的key (例如 "dyttzy")
-        // 对于自定义API，我们可能需要通过其名称来匹配
-        const apiKeyOrName = checkbox.dataset.api || checkbox.id.replace('api_', '');
-        const apiData = allAvailableApis.find(api => api.name === apiKeyOrName || api.sourceName === apiKeyOrName);
+        const apiKey = checkbox.dataset.api; // 内置API的key
+        const customApiIndex = checkbox.dataset.customIndex; // 自定义API的index
+
+        let apiDataKey;
+        if (apiKey) {
+            apiDataKey = apiKey;
+        } else if (customApiIndex !== undefined) {
+            apiDataKey = 'custom_' + customApiIndex;
+        }
+
+        const apiData = allAvailableApisMap.get(apiDataKey);
 
         if (apiData) {
             if (type === 'normal') {
-                if (!apiData.isAdult) {
-                    checkbox.checked = selectAll;
+                // 如果是"全选普通" (selectAll is true)
+                // - 普通API选中，成人API不选中
+                // 如果是"全不选普通"（ hipotetical selectAll is false, not directly used by a button for 'normal' type alone）
+                // - 普通API不选中，成人API保持不变
+                if (selectAll) {
+                    checkbox.checked = !apiData.isAdult;
+                } else {
+                    // This branch is for selectAll=false with type='normal'
+                    // Not directly used by "全不选普通" button, "全不选" handles all.
+                    if (!apiData.isAdult) checkbox.checked = false;
                 }
             } else if (type === 'adult') {
-                if (apiData.isAdult) {
-                    checkbox.checked = selectAll;
+                // 如果是"全选成人" (selectAll is true)
+                // - 成人API选中，普通API不选中
+                // 如果是"全不选成人"（hipotetical selectAll is false)
+                // - 成人API不选中，普通API保持不变
+                if (selectAll) {
+                    checkbox.checked = apiData.isAdult;
+                } else {
+                    // This branch is for selectAll=false with type='adult'
+                    if (apiData.isAdult) checkbox.checked = false;
                 }
             } else if (type === true) { // 兼容旧的 selectAllAPIs(true, true) 调用，视为普通资源
-                if (!apiData.isAdult) {
-                    checkbox.checked = selectAll;
+                if (selectAll) {
+                    checkbox.checked = !apiData.isAdult;
+                } else {
+                    if (!apiData.isAdult) checkbox.checked = false;
                 }
-            } else { // type 为 undefined 或其他情况，则全选/全不选所有
+            } else { // type 为 undefined (对应"全选"或"全不选"按钮)
                 checkbox.checked = selectAll;
             }
         }
     });
-    updateSelectedAPIs(); // 这个函数应该在内部处理 selectedAPIs 数组的更新和 localStorage 的保存
-    // updateSelectedApiCount(); // updateSelectedAPIs 通常会调用这个，或者在这里显式调用以确保UI更新
+    updateSelectedAPIs(); // 更新 selectedAPIs 数组并保存到localStorage
+    // updateSelectedApiCount(); // updateSelectedAPIs 内部会调用 updateSelectedApiCount
 }
 
 // 显示添加自定义API表单
